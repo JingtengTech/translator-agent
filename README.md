@@ -1,37 +1,29 @@
 # translator-agent
 
 #### 介绍
-用于完整翻译整篇论文/文章的煎蛋智能体
+用于完整翻译整篇论文/文章的煎蛋智能体。不再受限与大语言模型的输出窗口大小，可以持续自动翻译整篇文章。
 
-#### 软件架构
-软件架构说明
+本智能体需要配合另外的Translator智能体(https://gitee.com/gendial/translator)使用。
 
-
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
+#### 煎蛋智能体流程
+![alt text](image.png)
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1. 创建任意煎蛋智能体
+2. 点击进入智能体编辑界面
+3. 点击源代码 -> 导入
+4. 选择文件agent.gen，完整煎蛋流程即可导入。
+5. 点击开始节点，设置对应的**agentId** 和 **token**变量，设置为配套的translator的 ID 和 secrect。详情参考https://gitee.com/gendial/translator
+6. 点击设置，修改 "无干预最多执行节点数目" 为 100或更多，取决于需要翻译的最长文章的大小。
+7. 多模态选项里勾上 "文件"
+8. 可选择你喜欢的大语言模型（推荐deepseek-v3）
+9. 保存设置
+10. 点击编辑流程，点击调试按钮，上传文章，即可自动翻译
 
-#### 参与贡献
+#### 注册煎蛋账号
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+1.  访问https://gendial.cn
+2.  与右下角的煎蛋对话获取测试账号
 
 
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
