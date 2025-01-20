@@ -11,16 +11,7 @@
                 "chunk": "",
                 "done": ""
             },
-            "envs": [
-                {
-                    "key": "agentId",
-                    "value": "YOUR_TRANSLATOR_ID"
-                },
-                {
-                    "key": "token",
-                    "value": "YOUR_TRANSLAOTR_SECRET"
-                }
-            ],
+            "envs": [],
             "appearance": {
                 "startPoint": "{\"x\":-280,\"y\":290}",
                 "textPoint": "{\"x\":-280,\"y\":290}"
@@ -87,19 +78,6 @@
             }
         },
         {
-            "nodeId": "b1372fac-31a2-428f-8ba4-a7d01a421fe8",
-            "action": 6,
-            "lang": "js",
-            "prompt": "const axios = require('axios');\n\nasync function callApi(chunk) {\n    try {\n\n        // const encodedChunk = encodeURIComponent(chunk);\n        const response = await axios.post('https://gendial.jingtengtech.com/api/chat', {\n            agentId: '{{agentId}}',\n            msg: chunk\n        }, {\n            headers: {\n                'Authorization': 'Bearer {{token}}',\n                'Content-Type': 'application/json'\n            },\n            responseType: 'stream'\n        });\n\n        response.data.on('data', (chunk) => {\n            // at this point, the string is like {}{}{},\n            // we need to split it by {} to get the json object\n            const chunkString = chunk.toString('utf8');\n            const jsonObjects = chunkString.split('}{');\n\n            jsonObjects.forEach((jsonString) => {\n               // console.log(`Json object: ${jsonString}`)\n                // add back the {} to make it a valid json object\n                if (!jsonString.endsWith('}')) {\n                    jsonString += '}'\n                }\n                if (!jsonString.startsWith('{')) {\n                    jsonString = '{' + jsonString\n                }\n\n                const obj = JSON.parse(jsonString);\n                for (const msg of obj.msgs) {\n                    process.stdout.write(msg.msg);\n                }\n            });\n                        \n        });\n\n        response.data.on('end', () => {\n           //  console.log('\\nStream ended.');\n        });\n\n    } catch (error) {\n        console.error('Error calling the API:', error);\n    }\n}\n\n(async() => {\n    let result = await callApi(`{{chunk}}`);\n})();",
-            "sendToUser": true,
-            "waitForUserResp": false,
-            "feedbackMessage": "正在翻译",
-            "appearance": {
-                "startPoint": "{\"x\":2040,\"y\":180}",
-                "textPoint": "{\"x\":2040,\"y\":180}"
-            }
-        },
-        {
             "nodeId": "ad107c6e-7926-4783-913c-a962a607b6e5",
             "action": 6,
             "lang": "js",
@@ -148,6 +126,19 @@
                 "startPoint": "{\"x\":470,\"y\":-50}",
                 "textPoint": "{\"x\":470,\"y\":-50}"
             }
+        },
+        {
+            "nodeId": "f8707a91-dd99-4ef8-bbef-3612ef818926",
+            "action": 100,
+            "prompt": "按照用户的提示翻译文字。如果用户没有说明翻译成什么语言，则翻译为中文。\n\n用户提示\n=====\n{{sys.userMessage}}\n\n文字\n===\n{{chunk}}\n\n你只需要输出翻译后的文字，不需要任何额外的信息。使用markdown格式输出，但是不要把整个内容包裹在```里\n\n",
+            "showReferences": false,
+            "sendToUser": true,
+            "waitForUserResp": false,
+            "searchVectorDb": false,
+            "appearance": {
+                "startPoint": "{\"x\":2000,\"y\":180}",
+                "textPoint": "{\"x\":2000,\"y\":180}"
+            }
         }
     ],
     "edges": [
@@ -187,19 +178,6 @@
             }
         },
         {
-            "edgeId": "6cfcf840-25b3-4857-8cf1-531182e4e9da",
-            "sourceNodeId": "f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7",
-            "targetNodeId": "b1372fac-31a2-428f-8ba4-a7d01a421fe8",
-            "condition": "false",
-            "type": "judge-link",
-            "appearance": {
-                "startPoint": "{\"x\":1770,\"y\":-80}",
-                "endPoint": "{\"x\":1890,\"y\":180}",
-                "textPoint": "{\"x\":1830,\"y\":50}",
-                "pointsList": "[{\"x\":1770,\"y\":-80},{\"x\":1870,\"y\":-80},{\"x\":1790,\"y\":180},{\"x\":1890,\"y\":180}]"
-            }
-        },
-        {
             "edgeId": "c187e129-b3e7-4860-a0fe-c97c3c9624b3",
             "sourceNodeId": "d0c33210-45c4-4b5a-99e3-8bfb8b5df870",
             "targetNodeId": "ad107c6e-7926-4783-913c-a962a607b6e5",
@@ -208,17 +186,6 @@
                 "startPoint": "{\"x\":970,\"y\":260}",
                 "endPoint": "{\"x\":1010,\"y\":-80}",
                 "pointsList": "[{\"x\":970,\"y\":260},{\"x\":1070,\"y\":260},{\"x\":910,\"y\":-80},{\"x\":1010,\"y\":-80}]"
-            }
-        },
-        {
-            "edgeId": "daf0f6ac-6c6d-4499-93f1-b62eeae8e470",
-            "sourceNodeId": "b1372fac-31a2-428f-8ba4-a7d01a421fe8",
-            "targetNodeId": "f8f6e702-e668-4f18-a021-ee65cc9a90af",
-            "type": "flow-link",
-            "appearance": {
-                "startPoint": "{\"x\":2190,\"y\":180}",
-                "endPoint": "{\"x\":2260,\"y\":180}",
-                "pointsList": "[{\"x\":2190,\"y\":180},{\"x\":2290,\"y\":180},{\"x\":2160,\"y\":180},{\"x\":2260,\"y\":180}]"
             }
         },
         {
@@ -304,6 +271,30 @@
                 "endPoint": "{\"x\":320,\"y\":260}",
                 "textPoint": "{\"x\":270,\"y\":160}",
                 "pointsList": "[{\"x\":220,\"y\":60},{\"x\":320,\"y\":60},{\"x\":220,\"y\":260},{\"x\":320,\"y\":260}]"
+            }
+        },
+        {
+            "edgeId": "422bcf1c-62f2-4907-8386-95974ed074bc",
+            "sourceNodeId": "f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7",
+            "targetNodeId": "f8707a91-dd99-4ef8-bbef-3612ef818926",
+            "condition": "false",
+            "type": "judge-link",
+            "appearance": {
+                "startPoint": "{\"x\":1770,\"y\":-80}",
+                "endPoint": "{\"x\":1850,\"y\":180}",
+                "textPoint": "{\"x\":1810,\"y\":50}",
+                "pointsList": "[{\"x\":1770,\"y\":-80},{\"x\":1870,\"y\":-80},{\"x\":1750,\"y\":180},{\"x\":1850,\"y\":180}]"
+            }
+        },
+        {
+            "edgeId": "d559ae03-a094-4a14-af97-cb7cfd386ae6",
+            "sourceNodeId": "f8707a91-dd99-4ef8-bbef-3612ef818926",
+            "targetNodeId": "f8f6e702-e668-4f18-a021-ee65cc9a90af",
+            "type": "flow-link",
+            "appearance": {
+                "startPoint": "{\"x\":2150,\"y\":180}",
+                "endPoint": "{\"x\":2260,\"y\":180}",
+                "pointsList": "[{\"x\":2150,\"y\":180},{\"x\":2250,\"y\":180},{\"x\":2160,\"y\":180},{\"x\":2260,\"y\":180}]"
             }
         }
     ]
