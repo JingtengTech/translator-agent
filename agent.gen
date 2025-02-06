@@ -1,1 +1,238 @@
-{"nodes":[{"nodeId":"690a398f-e64c-406b-815b-0fcd8bdcaf3e","action":0,"prompt":"上传论文进行翻译","welcomeType":1,"varInitValues":{"n":"0","content":"","chunk":"","done":""},"envs":[],"appearance":{"startPoint":"{\"x\":-280,\"y\":290}","textPoint":"{\"x\":-280,\"y\":290}"}},{"nodeId":"db151877-8f43-462b-b337-03850e106b73","action":6,"lang":"js","prompt":"给定以下文件链接，下载并读取文件内容。\n\n{{sys.fileUrl}}\n\n程序需要输出完整的文件内容","codeMethod":1,"sendToUser":false,"outputVariableName":"content","feedbackMessage":"正在读取文件内容","appearance":{"startPoint":"{\"x\":470,\"y\":260}","textPoint":"{\"x\":470,\"y\":260}"}},{"nodeId":"d0c33210-45c4-4b5a-99e3-8bfb8b5df870","action":6,"lang":"js","codeMethod":0,"prompt":"function splitContentIntoChunks(content) {\n    const maxChunkSize = 4000;\n    const sentenceEndings = /[。！？.!?]/; // 匹配中文句号、感叹号、问号\n\n    let chunks = [];\n    let currentIndex = 0;\n\n    while (currentIndex < content.length) {\n        let endIndex = currentIndex + maxChunkSize;\n\n        // 如果已经到达或超过内容长度，直接将剩余部分加入chunks\n        if (endIndex >= content.length) {\n            chunks.push(content.slice(currentIndex));\n            break;\n        }\n\n        // 向前查找最近的句子结束符\n        let lastSentenceEnd = content.lastIndexOf('。', endIndex);\n        let lastExclamationEnd = content.lastIndexOf('！', endIndex);\n        let lastQuestionEnd = content.lastIndexOf('？', endIndex);\n        let lastPeriodEnd = content.lastIndexOf('.', endIndex);\n        let lastExclamationMarkEnd = content.lastIndexOf('!', endIndex);\n        let lastQuestionMarkEnd = content.lastIndexOf('?', endIndex);\n\n        // 找到最近的句子结束符\n        let lastEnd = Math.max(lastSentenceEnd, lastExclamationEnd, lastQuestionEnd, lastPeriodEnd, lastExclamationMarkEnd, lastQuestionMarkEnd);\n\n        // 如果在当前块中找不到句子结束符，直接切割到maxChunkSize\n        if (lastEnd === -1) {\n            lastEnd = endIndex;\n        } else {\n            // 包含句子结束符\n            lastEnd += 1; // 包括结束符本身\n        }\n\n        chunks.push(content.slice(currentIndex, lastEnd));\n        currentIndex = lastEnd;\n    }\n\n    return chunks;\n}\n\nconst result = splitContentIntoChunks(`{{content}}`);\n\nif ({{n}} >= result.length) {\n     process.stdout.write(\"done\");\n}\nelse {\n     let chunk = result[{{n}}];\n     chunk = chunk .replace(/`/g, '\\\\`');\n     process.stdout.write(chunk);\n}\n","outputVariableName":"chunk","processResult":false,"sendToUser":false,"appearance":{"startPoint":"{\"x\":820,\"y\":260}","textPoint":"{\"x\":820,\"y\":260}"}},{"nodeId":"5d8fbddf-4283-44d6-974a-da150df89c23","action":6,"lang":"js","prompt":"let n = {{n}} + 1;\nconsole.log(n);","outputVariableName":"n","appearance":{"startPoint":"{\"x\":2790,\"y\":180}","textPoint":"{\"x\":2790,\"y\":180}"}},{"nodeId":"7589a1cc-a7b1-4852-8ca9-8d6b55e1ae46","action":2,"provideType":1,"prompt":"翻译完成！","appearance":{"startPoint":"{\"x\":2040,\"y\":-330}","textPoint":"{\"x\":2040,\"y\":-330}"}},{"nodeId":"f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7","action":4,"prompt":"{{done}}","includeHistory":false,"llmModel":"","appearance":{"startPoint":"{\"x\":1620,\"y\":-80}","textPoint":"{\"x\":1620,\"y\":-80}"}},{"nodeId":"ad107c6e-7926-4783-913c-a962a607b6e5","action":6,"lang":"js","codeMethod":0,"prompt":"const check = `{{chunk}}`.substring(0, 4);\nconst done = check  === `done`;\nconsole.log(done);","outputVariableName":"done","appearance":{"startPoint":"{\"x\":1160,\"y\":-80}","textPoint":"{\"x\":1160,\"y\":-80}"}},{"nodeId":"f8f6e702-e668-4f18-a021-ee65cc9a90af","action":4,"prompt":"{{sys.lastError}}","includeHistory":false,"appearance":{"startPoint":"{\"x\":2410,\"y\":180}","textPoint":"{\"x\":2410,\"y\":180}"}},{"nodeId":"e9f5b55c-0f90-4268-9286-ee241ecd7758","action":2,"prompt":"用户终止翻译，再见","appearance":{"startPoint":"{\"x\":2760,\"y\":-70}","textPoint":"{\"x\":2760,\"y\":-70}"}},{"nodeId":"d653d0d2-9d81-482f-a61c-635bc1390a80","action":4,"prompt":"判定以下URL是否为N/A\n\nURL：\n{{sys.fileUrl}}","appearance":{"startPoint":"{\"x\":70,\"y\":60}","textPoint":"{\"x\":70,\"y\":60}"}},{"nodeId":"3166549c-d7f3-4e21-9520-d3a382c29a17","action":2,"prompt":"请上传论文","provideType":1,"appearance":{"startPoint":"{\"x\":470,\"y\":-50}","textPoint":"{\"x\":470,\"y\":-50}"}},{"nodeId":"f8707a91-dd99-4ef8-bbef-3612ef818926","action":100,"prompt":"按照用户的提示翻译文字。如果用户没有说明翻译成什么语言，则翻译为中文。\n\n用户提示\n=====\n{{sys.userMessage}}\n\n文字\n===\n{{chunk}}\n\n你只需要输出翻译后的文字，不需要任何额外的信息。使用markdown格式输出，但是不要把整个内容包裹在```里\n\n","showReferences":false,"sendToUser":true,"waitForUserResp":false,"searchVectorDb":false,"feedbackMessage":"正在翻译","appearance":{"startPoint":"{\"x\":2000,\"y\":180}","textPoint":"{\"x\":2000,\"y\":180}"}}],"edges":[{"edgeId":"33432717-194b-46b9-a15d-a48030de1db1","sourceNodeId":"db151877-8f43-462b-b337-03850e106b73","targetNodeId":"d0c33210-45c4-4b5a-99e3-8bfb8b5df870","type":"flow-link","appearance":{"startPoint":"{\"x\":620,\"y\":260}","endPoint":"{\"x\":670,\"y\":260}","pointsList":"[{\"x\":620,\"y\":260},{\"x\":720,\"y\":260},{\"x\":570,\"y\":260},{\"x\":670,\"y\":260}]"}},{"edgeId":"ce4065a0-fc3a-4a79-b8ad-f75937e97629","sourceNodeId":"5d8fbddf-4283-44d6-974a-da150df89c23","targetNodeId":"d0c33210-45c4-4b5a-99e3-8bfb8b5df870","type":"flow-link","appearance":{"startPoint":"{\"x\":2940,\"y\":180}","endPoint":"{\"x\":670,\"y\":260}","pointsList":"[{\"x\":2940,\"y\":180},{\"x\":3075,\"y\":451.5},{\"x\":440,\"y\":446.5},{\"x\":670,\"y\":260}]"}},{"edgeId":"687f2a4d-9b86-4e69-9308-c73131f72270","sourceNodeId":"f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7","targetNodeId":"7589a1cc-a7b1-4852-8ca9-8d6b55e1ae46","condition":"true","type":"judge-link","appearance":{"startPoint":"{\"x\":1770,\"y\":-80}","endPoint":"{\"x\":1890,\"y\":-330}","textPoint":"{\"x\":1830,\"y\":-205}","pointsList":"[{\"x\":1770,\"y\":-80},{\"x\":1870,\"y\":-80},{\"x\":1790,\"y\":-330},{\"x\":1890,\"y\":-330}]"}},{"edgeId":"c187e129-b3e7-4860-a0fe-c97c3c9624b3","sourceNodeId":"d0c33210-45c4-4b5a-99e3-8bfb8b5df870","targetNodeId":"ad107c6e-7926-4783-913c-a962a607b6e5","type":"flow-link","appearance":{"startPoint":"{\"x\":970,\"y\":260}","endPoint":"{\"x\":1010,\"y\":-80}","pointsList":"[{\"x\":970,\"y\":260},{\"x\":1070,\"y\":260},{\"x\":910,\"y\":-80},{\"x\":1010,\"y\":-80}]"}},{"edgeId":"b2714919-2287-4527-8851-a3e3ec11c9b9","sourceNodeId":"f8f6e702-e668-4f18-a021-ee65cc9a90af","targetNodeId":"5d8fbddf-4283-44d6-974a-da150df89c23","condition":"other","type":"judge-link","appearance":{"startPoint":"{\"x\":2560,\"y\":180}","endPoint":"{\"x\":2640,\"y\":180}","textPoint":"{\"x\":2600,\"y\":180}","pointsList":"[{\"x\":2560,\"y\":180},{\"x\":2660,\"y\":180},{\"x\":2540,\"y\":180},{\"x\":2640,\"y\":180}]"}},{"edgeId":"59b4af89-7508-4d4a-b54e-b79a9bcb4fb4","sourceNodeId":"f8f6e702-e668-4f18-a021-ee65cc9a90af","targetNodeId":"e9f5b55c-0f90-4268-9286-ee241ecd7758","condition":"aborted","type":"judge-link","appearance":{"startPoint":"{\"x\":2560,\"y\":180}","endPoint":"{\"x\":2610,\"y\":-70}","textPoint":"{\"x\":2585,\"y\":55}","pointsList":"[{\"x\":2560,\"y\":180},{\"x\":2660,\"y\":180},{\"x\":2510,\"y\":-70},{\"x\":2610,\"y\":-70}]"}},{"edgeId":"dd9a90bd-a5c3-4c5a-bb0f-8c0c88082107","sourceNodeId":"d653d0d2-9d81-482f-a61c-635bc1390a80","targetNodeId":"3166549c-d7f3-4e21-9520-d3a382c29a17","condition":"N/A","type":"judge-link","appearance":{"startPoint":"{\"x\":220,\"y\":60}","endPoint":"{\"x\":320,\"y\":-50}","textPoint":"{\"x\":270,\"y\":5}","pointsList":"[{\"x\":220,\"y\":60},{\"x\":320,\"y\":60},{\"x\":220,\"y\":-50},{\"x\":320,\"y\":-50}]"}},{"edgeId":"dd15c5f4-20f7-4c65-aaf4-1d776e2bd2a0","sourceNodeId":"3166549c-d7f3-4e21-9520-d3a382c29a17","targetNodeId":"d653d0d2-9d81-482f-a61c-635bc1390a80","type":"flow-link","appearance":{"startPoint":"{\"x\":620,\"y\":-50}","endPoint":"{\"x\":-80,\"y\":60}","pointsList":"[{\"x\":620,\"y\":-50},{\"x\":676,\"y\":-409.5},{\"x\":-269,\"y\":-37.5},{\"x\":-80,\"y\":60}]"}},{"edgeId":"48afad26-c79b-4adb-a4a3-46b6abda4046","sourceNodeId":"ad107c6e-7926-4783-913c-a962a607b6e5","targetNodeId":"f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7","type":"flow-link","appearance":{"startPoint":"{\"x\":1310,\"y\":-80}","endPoint":"{\"x\":1470,\"y\":-80}","pointsList":"[{\"x\":1310,\"y\":-80},{\"x\":1410,\"y\":-80},{\"x\":1370,\"y\":-80},{\"x\":1470,\"y\":-80}]"}},{"edgeId":"5bd5cfee-0835-4ff5-a071-18714a2e281c","sourceNodeId":"690a398f-e64c-406b-815b-0fcd8bdcaf3e","targetNodeId":"d653d0d2-9d81-482f-a61c-635bc1390a80","type":"flow-link","appearance":{"startPoint":"{\"x\":-130,\"y\":290}","endPoint":"{\"x\":-80,\"y\":60}","pointsList":"[{\"x\":-130,\"y\":290},{\"x\":-30,\"y\":290},{\"x\":-180,\"y\":60},{\"x\":-80,\"y\":60}]"}},{"edgeId":"0f7d10a6-341a-4b80-bd46-7c85ae3877a2","sourceNodeId":"d653d0d2-9d81-482f-a61c-635bc1390a80","targetNodeId":"db151877-8f43-462b-b337-03850e106b73","condition":"不为N/A","type":"judge-link","appearance":{"startPoint":"{\"x\":220,\"y\":60}","endPoint":"{\"x\":320,\"y\":260}","textPoint":"{\"x\":270,\"y\":160}","pointsList":"[{\"x\":220,\"y\":60},{\"x\":320,\"y\":60},{\"x\":220,\"y\":260},{\"x\":320,\"y\":260}]"}},{"edgeId":"422bcf1c-62f2-4907-8386-95974ed074bc","sourceNodeId":"f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7","targetNodeId":"f8707a91-dd99-4ef8-bbef-3612ef818926","condition":"false","type":"judge-link","appearance":{"startPoint":"{\"x\":1770,\"y\":-80}","endPoint":"{\"x\":1850,\"y\":180}","textPoint":"{\"x\":1810,\"y\":50}","pointsList":"[{\"x\":1770,\"y\":-80},{\"x\":1870,\"y\":-80},{\"x\":1750,\"y\":180},{\"x\":1850,\"y\":180}]"}},{"edgeId":"d559ae03-a094-4a14-af97-cb7cfd386ae6","sourceNodeId":"f8707a91-dd99-4ef8-bbef-3612ef818926","targetNodeId":"f8f6e702-e668-4f18-a021-ee65cc9a90af","type":"flow-link","appearance":{"startPoint":"{\"x\":2150,\"y\":180}","endPoint":"{\"x\":2260,\"y\":180}","pointsList":"[{\"x\":2150,\"y\":180},{\"x\":2250,\"y\":180},{\"x\":2160,\"y\":180},{\"x\":2260,\"y\":180}]"}}]}
+{
+    "nodes": [
+        {
+            "nodeId": "690a398f-e64c-406b-815b-0fcd8bdcaf3e",
+            "action": 0,
+            "prompt": "上传论文进行翻译",
+            "welcomeType": 1,
+            "varInitValues": {
+                "n": "0",
+                "content": "",
+                "chunk": "",
+                "done": ""
+            },
+            "envs": [],
+            "appearance": {
+                "startPoint": "{\"x\":-280,\"y\":290}",
+                "textPoint": "{\"x\":-280,\"y\":290}"
+            }
+        },
+        {
+            "nodeId": "db151877-8f43-462b-b337-03850e106b73",
+            "action": 6,
+            "lang": "js",
+            "prompt": "给定以下文件链接，下载并读取文件内容。\n\n{{sys.fileUrl}}\n\n程序需要输出完整的文件内容",
+            "codeMethod": 1,
+            "sendToUser": false,
+            "outputVariableName": "content",
+            "feedbackMessage": "正在读取文件内容",
+            "appearance": {
+                "startPoint": "{\"x\":470,\"y\":260}",
+                "textPoint": "{\"x\":470,\"y\":260}"
+            }
+        },
+        {
+            "nodeId": "d0c33210-45c4-4b5a-99e3-8bfb8b5df870",
+            "action": 6,
+            "lang": "js",
+            "codeMethod": 0,
+            "prompt": "function splitContentIntoChunks(content) {\n    const maxChunkSize = 4000;\n    const sentenceEndings = /[。！？.!?]/; // 匹配中文句号、感叹号、问号\n\n    let chunks = [];\n    let currentIndex = 0;\n\n    while (currentIndex < content.length) {\n        let endIndex = currentIndex + maxChunkSize;\n\n        // 如果已经到达或超过内容长度，直接将剩余部分加入chunks\n        if (endIndex >= content.length) {\n            chunks.push(content.slice(currentIndex));\n            break;\n        }\n\n        // 向前查找最近的句子结束符\n        let lastSentenceEnd = content.lastIndexOf('。', endIndex);\n        let lastExclamationEnd = content.lastIndexOf('！', endIndex);\n        let lastQuestionEnd = content.lastIndexOf('？', endIndex);\n        let lastPeriodEnd = content.lastIndexOf('.', endIndex);\n        let lastExclamationMarkEnd = content.lastIndexOf('!', endIndex);\n        let lastQuestionMarkEnd = content.lastIndexOf('?', endIndex);\n\n        // 找到最近的句子结束符\n        let lastEnd = Math.max(lastSentenceEnd, lastExclamationEnd, lastQuestionEnd, lastPeriodEnd, lastExclamationMarkEnd, lastQuestionMarkEnd);\n\n        // 如果在当前块中找不到句子结束符，直接切割到maxChunkSize\n        if (lastEnd === -1) {\n            lastEnd = endIndex;\n        } else {\n            // 包含句子结束符\n            lastEnd += 1; // 包括结束符本身\n        }\n\n        chunks.push(content.slice(currentIndex, lastEnd));\n        currentIndex = lastEnd;\n    }\n\n    return chunks;\n}\n\nconst result = splitContentIntoChunks(`{{content}}`);\n\nif ({{n}} >= result.length) {\n     process.stdout.write(\"done\");\n}\nelse {\n     let chunk = result[{{n}}];\n     chunk = chunk .replace(/`/g, '\\\\`');\n     process.stdout.write(chunk);\n}\n",
+            "outputVariableName": "chunk",
+            "processResult": false,
+            "sendToUser": false,
+            "appearance": {
+                "startPoint": "{\"x\":820,\"y\":260}",
+                "textPoint": "{\"x\":820,\"y\":260}"
+            }
+        },
+        {
+            "nodeId": "5d8fbddf-4283-44d6-974a-da150df89c23",
+            "action": 6,
+            "lang": "js",
+            "prompt": "let n = {{n}} + 1;\nprocess.stdout.write(n.toString());",
+            "outputVariableName": "n",
+            "appearance": {
+                "startPoint": "{\"x\":2340,\"y\":160}",
+                "textPoint": "{\"x\":2340,\"y\":160}"
+            }
+        },
+        {
+            "nodeId": "7589a1cc-a7b1-4852-8ca9-8d6b55e1ae46",
+            "action": 2,
+            "provideType": 1,
+            "prompt": "\n翻译完成！",
+            "appearance": {
+                "startPoint": "{\"x\":1840,\"y\":-310}",
+                "textPoint": "{\"x\":1840,\"y\":-310}"
+            }
+        },
+        {
+            "nodeId": "f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7",
+            "action": 4,
+            "prompt": "const check = `{{chunk}}`.substring(0, 4);\nconst done = check  === `done`;\nreturn done;",
+            "includeHistory": false,
+            "llmModel": "",
+            "judgeType": 1,
+            "lang": "js",
+            "appearance": {
+                "startPoint": "{\"x\":1210,\"y\":-60}",
+                "textPoint": "{\"x\":1210,\"y\":-60}"
+            }
+        },
+        {
+            "nodeId": "d653d0d2-9d81-482f-a61c-635bc1390a80",
+            "action": 4,
+            "prompt": "return `{{sys.fileUrl}}` === `N/A`;",
+            "judgeType": 1,
+            "lang": "js",
+            "appearance": {
+                "startPoint": "{\"x\":70,\"y\":60}",
+                "textPoint": "{\"x\":70,\"y\":60}"
+            }
+        },
+        {
+            "nodeId": "3166549c-d7f3-4e21-9520-d3a382c29a17",
+            "action": 2,
+            "prompt": "请上传论文",
+            "provideType": 1,
+            "appearance": {
+                "startPoint": "{\"x\":470,\"y\":-50}",
+                "textPoint": "{\"x\":470,\"y\":-50}"
+            }
+        },
+        {
+            "nodeId": "f8707a91-dd99-4ef8-bbef-3612ef818926",
+            "action": 100,
+            "prompt": "按照用户的提示翻译文字。如果用户没有说明翻译成什么语言，则翻译为中文。\n\n用户提示\n=====\n{{sys.userMessage}}\n\n文字\n===\n{{chunk}}\n\n你只需要输出翻译后的文字，不需要任何额外的信息。使用markdown格式输出，但是不要把整个内容包裹在```里\n\n",
+            "showReferences": false,
+            "sendToUser": true,
+            "waitForUserResp": false,
+            "searchVectorDb": false,
+            "feedbackMessage": "正在翻译",
+            "appearance": {
+                "startPoint": "{\"x\":1830,\"y\":160}",
+                "textPoint": "{\"x\":1830,\"y\":160}"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "edgeId": "33432717-194b-46b9-a15d-a48030de1db1",
+            "sourceNodeId": "db151877-8f43-462b-b337-03850e106b73",
+            "targetNodeId": "d0c33210-45c4-4b5a-99e3-8bfb8b5df870",
+            "type": "flow-link",
+            "appearance": {
+                "startPoint": "{\"x\":620,\"y\":260}",
+                "endPoint": "{\"x\":670,\"y\":260}",
+                "pointsList": "[{\"x\":620,\"y\":260},{\"x\":720,\"y\":260},{\"x\":570,\"y\":260},{\"x\":670,\"y\":260}]"
+            }
+        },
+        {
+            "edgeId": "ce4065a0-fc3a-4a79-b8ad-f75937e97629",
+            "sourceNodeId": "5d8fbddf-4283-44d6-974a-da150df89c23",
+            "targetNodeId": "d0c33210-45c4-4b5a-99e3-8bfb8b5df870",
+            "type": "flow-link",
+            "appearance": {
+                "startPoint": "{\"x\":2490,\"y\":160}",
+                "endPoint": "{\"x\":670,\"y\":260}",
+                "pointsList": "[{\"x\":2490,\"y\":160},{\"x\":2625,\"y\":431.5},{\"x\":440,\"y\":446.5},{\"x\":670,\"y\":260}]"
+            }
+        },
+        {
+            "edgeId": "687f2a4d-9b86-4e69-9308-c73131f72270",
+            "sourceNodeId": "f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7",
+            "targetNodeId": "7589a1cc-a7b1-4852-8ca9-8d6b55e1ae46",
+            "condition": "true",
+            "type": "judge-link",
+            "appearance": {
+                "startPoint": "{\"x\":1360,\"y\":-60}",
+                "endPoint": "{\"x\":1690,\"y\":-310}",
+                "textPoint": "{\"x\":1525,\"y\":-185}",
+                "pointsList": "[{\"x\":1360,\"y\":-60},{\"x\":1460,\"y\":-60},{\"x\":1590,\"y\":-310},{\"x\":1690,\"y\":-310}]"
+            }
+        },
+        {
+            "edgeId": "dd9a90bd-a5c3-4c5a-bb0f-8c0c88082107",
+            "sourceNodeId": "d653d0d2-9d81-482f-a61c-635bc1390a80",
+            "targetNodeId": "3166549c-d7f3-4e21-9520-d3a382c29a17",
+            "condition": "true",
+            "type": "judge-link",
+            "appearance": {
+                "startPoint": "{\"x\":220,\"y\":60}",
+                "endPoint": "{\"x\":320,\"y\":-50}",
+                "textPoint": "{\"x\":270,\"y\":5}",
+                "pointsList": "[{\"x\":220,\"y\":60},{\"x\":320,\"y\":60},{\"x\":220,\"y\":-50},{\"x\":320,\"y\":-50}]"
+            }
+        },
+        {
+            "edgeId": "dd15c5f4-20f7-4c65-aaf4-1d776e2bd2a0",
+            "sourceNodeId": "3166549c-d7f3-4e21-9520-d3a382c29a17",
+            "targetNodeId": "d653d0d2-9d81-482f-a61c-635bc1390a80",
+            "type": "flow-link",
+            "appearance": {
+                "startPoint": "{\"x\":620,\"y\":-50}",
+                "endPoint": "{\"x\":-80,\"y\":60}",
+                "pointsList": "[{\"x\":620,\"y\":-50},{\"x\":676,\"y\":-409.5},{\"x\":-269,\"y\":-37.5},{\"x\":-80,\"y\":60}]"
+            }
+        },
+        {
+            "edgeId": "5bd5cfee-0835-4ff5-a071-18714a2e281c",
+            "sourceNodeId": "690a398f-e64c-406b-815b-0fcd8bdcaf3e",
+            "targetNodeId": "d653d0d2-9d81-482f-a61c-635bc1390a80",
+            "type": "flow-link",
+            "appearance": {
+                "startPoint": "{\"x\":-130,\"y\":290}",
+                "endPoint": "{\"x\":-80,\"y\":60}",
+                "pointsList": "[{\"x\":-130,\"y\":290},{\"x\":-30,\"y\":290},{\"x\":-180,\"y\":60},{\"x\":-80,\"y\":60}]"
+            }
+        },
+        {
+            "edgeId": "0f7d10a6-341a-4b80-bd46-7c85ae3877a2",
+            "sourceNodeId": "d653d0d2-9d81-482f-a61c-635bc1390a80",
+            "targetNodeId": "db151877-8f43-462b-b337-03850e106b73",
+            "condition": "false",
+            "type": "judge-link",
+            "appearance": {
+                "startPoint": "{\"x\":220,\"y\":60}",
+                "endPoint": "{\"x\":320,\"y\":260}",
+                "textPoint": "{\"x\":270,\"y\":160}",
+                "pointsList": "[{\"x\":220,\"y\":60},{\"x\":320,\"y\":60},{\"x\":220,\"y\":260},{\"x\":320,\"y\":260}]"
+            }
+        },
+        {
+            "edgeId": "422bcf1c-62f2-4907-8386-95974ed074bc",
+            "sourceNodeId": "f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7",
+            "targetNodeId": "f8707a91-dd99-4ef8-bbef-3612ef818926",
+            "condition": "false",
+            "type": "judge-link",
+            "appearance": {
+                "startPoint": "{\"x\":1360,\"y\":-60}",
+                "endPoint": "{\"x\":1680,\"y\":160}",
+                "textPoint": "{\"x\":1520,\"y\":50}",
+                "pointsList": "[{\"x\":1360,\"y\":-60},{\"x\":1460,\"y\":-60},{\"x\":1580,\"y\":160},{\"x\":1680,\"y\":160}]"
+            }
+        },
+        {
+            "edgeId": "87d4cc04-f549-4a60-b96a-2e65869ce7a6",
+            "sourceNodeId": "d0c33210-45c4-4b5a-99e3-8bfb8b5df870",
+            "targetNodeId": "f2f1e5a2-7b8d-4a63-8bd6-1e8abf6b1fb7",
+            "type": "flow-link",
+            "appearance": {
+                "startPoint": "{\"x\":970,\"y\":260}",
+                "endPoint": "{\"x\":1060,\"y\":-60}",
+                "pointsList": "[{\"x\":970,\"y\":260},{\"x\":1070,\"y\":260},{\"x\":960,\"y\":-60},{\"x\":1060,\"y\":-60}]"
+            }
+        },
+        {
+            "edgeId": "bb530399-6e77-4357-ab61-5f498ed7dbf8",
+            "sourceNodeId": "f8707a91-dd99-4ef8-bbef-3612ef818926",
+            "targetNodeId": "5d8fbddf-4283-44d6-974a-da150df89c23",
+            "type": "flow-link",
+            "appearance": {
+                "startPoint": "{\"x\":1980,\"y\":160}",
+                "endPoint": "{\"x\":2190,\"y\":160}",
+                "pointsList": "[{\"x\":1980,\"y\":160},{\"x\":2080,\"y\":160},{\"x\":2090,\"y\":160},{\"x\":2190,\"y\":160}]"
+            }
+        }
+    ]
+}
